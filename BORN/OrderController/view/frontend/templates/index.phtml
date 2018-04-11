@@ -1,0 +1,86 @@
+<div class="block block-dashboard-orders">
+    <div class="block-title order"></div>    
+    <div class="block-content">    
+	    <div id="enterform">
+		    <p><strong>Enter the Email Address and Order Number:</strong></p>
+
+		    <form action="order" method="post" id="searchorders">
+		    <fieldset class="fieldset search account" data-hasrequired="* Required Fields">
+			<div class="field required">
+			    <label for="email_address" class="label"><span>Email</span></label>
+			    <div class="control">
+				<input type="email" name="email" autocomplete="email" id="email_address" value="" title="Email" class="input-text" size="50" data-validate="{required:true, 'validate-email':true}">
+			    </div>
+			</div>
+			<div class="field">
+			    <label for="entity_id" class="label"><span>Order Number</span></label>
+			    <div class="control">
+				<input type="text" name="entity_id" id="entity_id" value="" title="Order Number" size="50" class="input-text">
+			    </div>
+			</div>
+		    </fieldset>	
+
+		    <div class="actions-toolbar">
+			<div class="primary">
+			    <button type="submit" class="action submit primary" title="Search"><span>Search</span></button>
+			</div>
+		    </div>   
+		    </form>
+	    </div>
+
+    <div id="results" style="display:none">
+    </div>
+    
+    <div id="goback" style="display:none;">
+	    <div class="primary">
+		<button type="submit" class="action submit primary" title="Back" id="goback"><span>Search Again</span></button>
+	    </div>
+    </div>
+    
+    </div>
+</div>
+<script>
+require(['jquery'],function($){
+	$(document).ready(function() {
+		$("#searchorders").bind('submit', function (e) {
+		    var body = $('body').loader();
+		    body.loader('show');
+		    event.preventDefault();
+
+		    var formData = {
+			'email': $('#email_address').val(), 
+			'order': $('#entity_id').val() 
+		    };
+		    console.log(formData);
+		    var customurl = "<?php echo $this->getUrl().'ordercontroller/index/order'?>";
+
+		    $.ajax({
+			url: customurl,
+			type: "post",
+			dataType: 'json',
+			data: formData,
+			success: function(response) {
+			    var body = $('body').loader();
+			    body.loader('hide');
+			    $('#enterform').hide();
+			    $('#results').html(response.template);
+			    $('#results').show();
+			    $('#goback').show();
+			    console.log(response);
+			},
+			error: function (xhr, status, errorThrown) {
+			    console.log('Error happens. Try again.');
+                	}
+		    });
+		    e.preventDefault();
+		    return false;
+		});
+		
+		$('#goback').on( "click", function() {
+		  	$('#results').hide();
+		  	$('#goback').hide();
+		  	$('#enterform').show();
+		});
+	});
+});
+</script>
